@@ -7,87 +7,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <style>
-    *{
-      margin: 0;
-    }
-    body{
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      cursor: none;
-    }
-    #shards{
-      font-family: "Press Start 2P", cursive; 
-      position: absolute;
-      top: 1.3rem;
-      left: 2rem;
-      font-size: large;
-    }
-    #clicks{
-      font-family: "Press Start 2P", cursive; 
-      position: absolute;
-      top: 3.3rem;
-      left: 2rem;
-      font-size: large;
-    }
-    #cps{
-      font-family: "Press Start 2P", cursive; 
-      position: absolute;
-      top: 5.8rem;
-      left: 2rem;
-      font-size: large;
-    }
-    #upgradeClickbtn {
-      font-family: "Press Start 2P", cursive;
-      position: absolute;
-      bottom: 2rem;
-      left: 2rem;
-      background: #fff;
-      border: 3px solid #000;
-      border-radius: 10px;
-      padding: 10px 15px;
-      font-size: 12px;
-      color: #000;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 0 #000;
-      cursor: pointer;
-      transition: all 0.1s ease;
-    }
-    .addMonster{
-      font-family: "Press Start 2P", cursive;
-      position: absolute;
-      bottom: 2rem;
-      right: 2rem;
-      background: #fff;
-      border: 3px solid #000;
-      border-radius: 10px;
-      padding: 10px 15px;
-      font-size: 12px;
-      color: #000;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 0 #000;
-      cursor: pointer;
-      transition: all 0.1s ease;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 0 #000;
-    }
-    button:active {
-      transform: translateY(2px);
-      box-shadow: 0 2px 0 #000;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <canvas id="canvas"></canvas>
+
+  <div id="notification" class="notification"></div>
+
   <span id="shards"><img src="images/Separated Files/fc166.png" alt="monster shard" width="25"> <span id="shardOutput"></span></span>
   <span id="clicks"><img src="images/Separated Files/fc1508.png" alt="sword" width="25"> <span id="clickOutput">1</span></span>
   <span id="cps">CPS <span id="cpsOutput">0</span></span>
@@ -98,11 +24,28 @@
     <img src="images/Separated Files/fc166.png" alt="monster shard" width="25"> <span id="ClickUpgradeCost"></span>
   </button>
 
-  <button class="addMonster">
+  <button class="addMonster" id="addMonster">
     Add Monster Helper
   </button>
 
+  <div id="popup" class="popup">
+    <div class="popup-content">
+      <button id="closePopup" class="close-btn">✖</button>
+      <h2 id="popupTitle"></h2>
+      <p id="popupMessage"></p>
+
+      <div id="popupFileContainer">
+        <input type="file" id="monsterFile" accept="image/*">
+      </div>
+
+      <div class="popup-buttons">
+        <button id="confirmPopup">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="firebase.js"></script>
   <script src="declarations.js"></script>
-  <script src="game.js"></script>
+  <script type="module" src="game.js"></script>
 </body>
 </html>
