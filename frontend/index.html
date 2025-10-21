@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+
+  <div id="notification" class="notification"></div>
+
+  <span id="shards"><img src="images/Separated Files/fc166.png" alt="monster shard" width="25"> <span id="shardOutput"></span></span>
+  <span id="clicks"><img src="images/Separated Files/fc1508.png" alt="sword" width="25"> <span id="clickOutput">1</span></span>
+  <span id="cps">CPS <span id="cpsOutput">0</span></span>
+
+  <button id="upgradeClickbtn" type="button">
+    <img src="images/Separated Files/fc1098.png" alt="upgrade pic" width="25">
+    =
+    <img src="images/Separated Files/fc166.png" alt="monster shard" width="25"> <span id="ClickUpgradeCost"></span>
+  </button>
+
+  <button class="addMonster" id="addMonster" type="button">
+    Add Monster Helper
+  </button>
+
+  <div id="popup" class="popup">
+    <div class="popup-content">
+      <button id="closePopup" class="close-btn" type="button">✖</button>
+      <h2 id="popupTitle"></h2>
+      <p id="popupMessage"></p>
+      <div id="popupFileContainer">
+        <input type="file" id="monsterFile" accept="image/*">
+      </div>
+
+      <div class="popup-buttons">
+        <button id="confirmPopup" type="button">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="declarations.js"></script>
+  <script type="module">
+    import { ethers } from "https://esm.sh/ethers@6.6.0";
+    // import { ethers } from "https://esm.sh/ethers@6.12.0";
+
+    // Replace with your contract address and the mint function name your contract exposes.
+    const CONTRACT_ADDRESS = "0xe6575c05FdbEbB7dBcdfc16b0798a111cD4fCa11";
+
+    // Minimal ABI for Thirdweb-style ERC721 mintTo(address, string)
+    const MINT_TO_ABI = [
+      {
+        "inputs": [
+          { "internalType": "address", "name": "to", "type": "address" },
+          { "internalType": "string", "name": "uri", "type": "string" }
+        ],
+        "name": "mintTo",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      }
+    ];
+
+    // If your contract uses a different function name/signature, replace the ABI accordingly.
+
+    async function connectWalletEthers() {
+      if (!window.ethereum) { alert("Install MetaMask"); return null; }
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      provider.getEnsAddress = async () => null;
+      const signer = await provider.getSigner();
+      const address = await signer.getAddress();
+      window.wallet = { provider, signer, address };
+      console.log("Connected wallet:", address);
+      return window.wallet;
+    }
+
+    async function mintWithEthers(metadataURI) {
+      if (!window.wallet) await connectWalletEthers();
+      const { signer, address } = window.wallet;
+      // Create contract object with signer
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, MINT_TO_ABI, signer);
+      try {
+        const tx = await contract.mintTo(address, metadataURI);
+        console.log("Mint tx submitted:", tx);
+        await tx.wait(); // wait for confirmation
+        console.log("Mint confirmed");
+        // Some contracts return tokenId as event or return; you might need to parse receipt.
+        return tx;
+      } catch (err) {
+        console.error("Mint error", err);
+        throw err;
+      }
+    }
+
+    // expose for your game.js
+    window.connectWalletEthers = connectWalletEthers;
+    window.mintWithEthers = mintWithEthers;
+
+    // optionally auto-connect
+    connectWalletEthers().catch(()=>{});
+  </script>
+  <script type="module" src="game.js"></script>
+</body>
+</html>
